@@ -1,77 +1,82 @@
-"use strict";
-const API_URL = "https://opentdb.com/api.php";
-const AMOUNT = 10;
-const CATEGORY = 9;
-const DIFFICULTY = "easy";
-const TYPE = "multiple";
-const questionElement = document.getElementById("question");
-const optionsElement = document.getElementById("options");
-const submitButton = document.getElementById("submit button");
-let questions = [];
-let currentIndex = 0;
-// Fisher-Yates Shuffle Algorithm 
-// Written by chatgpt
+var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
+    if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
+        if (ar || !(i in from)) {
+            if (!ar) ar = Array.prototype.slice.call(from, 0, i);
+            ar[i] = from[i];
+        }
+    }
+    return to.concat(ar || Array.prototype.slice.call(from));
+};
+var API_URL = "https://opentdb.com/api.php";
+var AMOUNT = 10;
+var CATEGORY = 9;
+var DIFFICULTY = "easy";
+var TYPE = "multiple";
+var questionElement = document.getElementById("question");
+var optionsElement = document.getElementById("options");
+var submitButton = document.getElementById("submitButton");
+var questions = [];
+var currentIndex = 0;
 function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
+    var _a;
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        _a = [array[j], array[i]], array[i] = _a[0], array[j] = _a[1];
     }
     return array;
 }
-// This mf thing will do nothing just stay in a corner and will wait till the displayQuestion thing invoke so that it will do the api work
 function fetchQuestion() {
-    fetch(`${API_URL}?amount=${AMOUNT}&category=${CATEGORY}&difficulty=${DIFFICULTY}&type=${TYPE}`)
-        .then((response) => response.json())
-        .then((data) => {
+    fetch("".concat(API_URL, "?amount=").concat(AMOUNT, "&category=").concat(CATEGORY, "&difficulty=").concat(DIFFICULTY, "&type=").concat(TYPE))
+        .then(function (response) { return response.json(); })
+        .then(function (data) {
         if (data.response_code === 0) {
             questions = data.results;
             displayQuestion();
         }
     })
-        .catch((error) => console.error("Error fetching data", error)); //Useless thing it was requirement otherwise i have never had added this 
+        .catch(function (error) { return console.error("Error fetching data", error); });
 }
-// This thing will display Question on the html page 
 function displayQuestion() {
     if (currentIndex < questions.length) {
-        const currentQuestion = questions[currentIndex];
+        var currentQuestion = questions[currentIndex];
         questionElement.textContent = currentQuestion.question;
-        // Clear previous options
         optionsElement.innerHTML = '';
-        // Combine incorrect answers and correct answer
-        const allOptions = [...currentQuestion.incorrect_answers, currentQuestion.correct_answer];
-        const shuffledOptions = shuffleArray(allOptions);
-        shuffledOptions.forEach((optionText) => {
-            const optionElement = document.createElement("div");
+        var allOptions = __spreadArray(__spreadArray([], currentQuestion.incorrect_answers, true), [currentQuestion.correct_answer], false);
+        var shuffledOptions = shuffleArray(allOptions);
+        shuffledOptions.forEach(function (optionText) {
+            var optionElement = document.createElement("div");
             optionElement.textContent = optionText;
             optionElement.className = "option";
             optionsElement.appendChild(optionElement);
-            // Add click event listener to each option
-            optionElement.addEventListener('click', () => handleAnswer(optionText));
+            optionElement.addEventListener('click', function () { return handleAnswer(optionText); });
         });
     }
     else {
         questionElement.textContent = 'Quiz finished!';
         optionsElement.innerHTML = '';
-        submitButton.style.display = 'told ya';
+        submitButton.style.display = 'none';
     }
 }
 function confusing() {
-    const div = document.createElement("div");
-    const p = document.createElement("p");
-    p.textContent = "confusing!";
-    div.appendChild(p);
-    document.body.appendChild(div);
+    console.log("Confusing function triggered!");
+    var elementsToToggle = [questionElement, optionsElement, submitButton];
+    elementsToToggle.forEach(function (element) {
+        if (element) {
+            element.style.visibility = 'hidden';
+        }
+    });
+    setTimeout(function () {
+        elementsToToggle.forEach(function (element) {
+            if (element) {
+                element.style.visibility = 'visible';
+            }
+        });
+    }, 800);
 }
 function handleAnswer(selectedAnswer) {
-    const correctAnswer = questions[currentIndex].correct_answer;
-    if (selectedAnswer === correctAnswer) {
-        alert('Correct!');
-    }
-    else {
-        alert('Incorrect! The correct answer was: ' + correctAnswer);
-    }
+    var correctAnswer = questions[currentIndex].correct_answer;
+    alert(selectedAnswer === correctAnswer ? 'Correct!' : "Incorrect! The correct answer was: ".concat(correctAnswer));
     currentIndex++;
     displayQuestion();
 }
-// Initialize the quiz
 fetchQuestion();
